@@ -1,6 +1,6 @@
 title: CV
 profile_img: /assets/img/profile.webp
-icon_img: /assets/img/icon.webp
+icon_img: https://images.unsplash.com/photo-1601134991665-a020399422e3?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
 
 name: "Manthan Bhala"
 job: "Machine Learning Engineer"
@@ -29,3 +29,4 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
+  
