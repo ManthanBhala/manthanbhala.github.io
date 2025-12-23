@@ -4,11 +4,7 @@ Modern resume and portfolio template built with Next.js and Tailwind CSS.
 
 ## Demo
 
-https://demo-neonfolio.vercel.app/
-
-## Detailed Guide on Complete Deployment
-
-https://faheemarif.hashnode.dev/build-and-deploy-your-personal-portfolio-website
+https://manthanbhala.github.io/
 
 ## Screenshots
 ![Original](/docs/screenshots/themes-collage.png)
