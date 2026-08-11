@@ -2,10 +2,10 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Manthan Portfolio',
-  description: 'Resume and portfolio built with Next.js and Tailwind CSS.',
-  keywords: 'resume, portfolio, nextjs, tailwind, personal site, template, developer portfolio',
-  authors: [{ name: 'Your Name' }],
+  title: 'Manthan Bhala | Machine Learning Engineer',
+  description: 'GitHub Pages resume for Manthan Bhala, Machine Learning Engineer.',
+  keywords: 'Manthan Bhala, machine learning engineer, resume, GitHub Pages',
+  authors: [{ name: 'Manthan Bhala' }],
 
   icons: {
     icon: '/favicon.png',
@@ -13,23 +13,10 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: 'Personal Resume Portfolio',
-    description: 'A modern resume and portfolio template built with Next.js.',
+    title: 'Manthan Bhala | Machine Learning Engineer',
+    description: 'GitHub Pages resume for Manthan Bhala.',
     type: 'website',
     locale: 'en_US',
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
-
-  verification: {
-    google: 'your-google-verification-code',
   },
 }
 
