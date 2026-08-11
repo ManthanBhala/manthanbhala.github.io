@@ -48,12 +48,12 @@ export const theme = {
 // Labels and copy centralized here
 export const labels = {
   nav: {
-    about: "About",
+    about: "Summary",
     skills: "Skills",
     experience: "Experience",
     education: "Education",
     contact: "Contact",
-    publications: "Publications",
+    publications: "Selected Work",
   },
   hero: {
     ctaContact: "Get in Touch",
@@ -61,17 +61,17 @@ export const labels = {
     locationIconLabel: "Location",
   },
   sections: {
-    summary: "Professional Summary",
-    skills: "Core Competencies",
-    experience: "Professional Experience",
-    publications: "Patents & Publications",
+    summary: "Summary",
+    skills: "Core Skills",
+    experience: "Experience",
+    publications: "Selected Work",
     education: "Education",
-    achievements: "Achievements",
+    achievements: "Impact",
     certifications: "Certifications",
-    contact: "Get In Touch",
-    requestResume: "Request Full Resume",
-    schedule: "Schedule a Meeting",
-    contactForm: "Send a Message",
+    contact: "Contact",
+    requestResume: "Resume",
+    schedule: "Meeting",
+    contactForm: "Message",
   },
   forms: {
     contact: {
@@ -110,13 +110,13 @@ export const personalInfo = {
   name: "Manthan Bhala",
   title: "Machine Learning Engineer",
   location: "Gurugram, Haryana, India",
-  tagline: "Building practical machine-learning systems for search, ranking, and recommendations.",
+  tagline: "Machine learning engineer building production systems for search, ranking, and recommendations.",
   email: "manthanbhala@gmail.com",
   linkedin: "https://www.linkedin.com/in/manthan-bhala-a11760136",
   github: "https://github.com/ManthanBhala",
   summary: [
-    "Machine learning engineer focused on improving e-commerce discovery with ranking, retrieval, and recommendation systems.",
-    "I like turning model work into measurable business impact by shipping production systems that are practical, fast, and maintainable."
+    "I build practical ML systems that improve e-commerce discovery, especially retrieval, ranking, and recommendation pipelines.",
+    "My focus is turning model work into measurable product impact with production-ready implementation and careful iteration."
   ]
 }
 
