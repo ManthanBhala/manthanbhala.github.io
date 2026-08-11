@@ -50,7 +50,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    if (resumeModalOpen) {
+    if (resumeRequest.enabled && resumeModalOpen) {
       requestAnimationFrame(() => {
         resumeEmailRef.current?.focus()
       })
@@ -89,8 +89,6 @@ export default function Home() {
               <a href="#skills" className={`${text.secondary} hover:${text.accent} transition-colors`}>{labels.nav.skills}</a>
               <a href="#experience" className={`${text.secondary} hover:${text.accent} transition-colors`}>{labels.nav.experience}</a>
               <a href="#publications" className={`${text.secondary} hover:${text.accent} transition-colors`}>{labels.nav.publications ?? 'Publications'}</a>
-              <a href="#education" className={`${text.secondary} hover:${text.accent} transition-colors`}>{labels.nav.education}</a>
-              <a href={personalInfo.blogUrl} target="_blank" rel="noopener noreferrer" className={`${text.secondary} hover:${text.accent} transition-colors`}>{labels.nav.blog}</a>
               <a href="#contact" className={`${text.secondary} hover:${text.accent} transition-colors`}>{labels.nav.contact}</a>
             </div>
 
@@ -142,13 +140,6 @@ export default function Home() {
                 className={`block px-4 py-3 ${text.secondary} hover:${text.accent} hover:${bg.card} rounded-lg transition-all`}
               >
                 {labels.nav.publications ?? 'Publications'}
-              </a>
-              <a
-                href="#education"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-3 ${text.secondary} hover:${text.accent} hover:${bg.card} rounded-lg transition-all`}
-              >
-                {labels.nav.education}
               </a>
               <a
                 href="#contact"
@@ -208,7 +199,7 @@ export default function Home() {
               <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed mb-8">
                 {personalInfo.tagline}
               </p>
-              {/* Mobile 2x2 grid with blog */}
+              {/* Mobile quick links */}
               <div className="grid grid-cols-2 gap-3 sm:gap-4 md:hidden">
                 <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className={`w-full inline-flex items-center justify-center px-4 py-2.5 whitespace-nowrap text-sm ${accentButton} font-medium rounded-lg transition-all ${accentShadow}`}>
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -216,12 +207,11 @@ export default function Home() {
                   </svg>
                   {labels.hero.ctaLinkedIn}
                 </a>
-                <a href={personalInfo.blogUrl} target="_blank" rel="noopener noreferrer" className={`w-full inline-flex items-center justify-center px-4 py-2.5 whitespace-nowrap text-sm ${accentButton} font-medium rounded-lg transition-all ${accentShadow}`}>
-                  <svg className="w-5 h-5 mr-2" viewBox="0 0 32 32" aria-hidden="true">
-                    <rect x="7" y="7" width="18" height="18" rx="4" transform="rotate(45 16 16)" fill="currentColor" opacity="0.85" />
-                    <circle cx="16" cy="16" r="5" fill="white" />
+                <a href="#publications" className={`w-full inline-flex items-center justify-center px-4 py-2.5 whitespace-nowrap text-sm ${accentButton} font-medium rounded-lg transition-all ${accentShadow}`}>
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M4 6h16v2H4zM4 11h10v2H4zM4 16h16v2H4z" />
                   </svg>
-                  {labels.nav.blog}
+                  Selected Work
                 </a>
                 <a href={personalInfo.github} target="_blank" rel="noopener noreferrer" className={`w-full inline-flex items-center justify-center px-4 py-2.5 whitespace-nowrap text-sm ${accentButton} font-medium rounded-lg transition-all ${accentShadow}`}>
                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -385,36 +375,38 @@ export default function Home() {
       </section>
 
       {/* Education */}
-      <section id="education" className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${sectionAltClass} relative`}>
-        <div className={`absolute inset-0 ${accentOverlayRight}`}></div>
-        <div className="max-w-6xl mx-auto relative">
-          <div className="flex items-center gap-3 mb-8">
-            <div className={`w-1 h-8 ${accentDivider} rounded-full`}></div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white">{labels.sections.education}</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {education.map((edu, index) => (
-              <div key={index} className={`${cardClass} p-6 hover:${border.accent} hover:shadow-lg hover:${accent.glowSoft} transition-all group`}>
-                <div className="flex items-start gap-4">
-                  <div className={`flex-shrink-0 w-12 h-12 ${accentChip} rounded-lg flex items-center justify-center border ${border.accent} group-hover:${border.accent} transition-colors`}>
-                    <svg className={`w-6 h-6 ${text.accent}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white mb-1">{edu.degree}</h3>
-                    <p className={`${text.accent} font-medium mb-1`}>{edu.institution}</p>
-                    <p className={`text-sm ${text.tertiary} mb-2`}>{`${edu.location} • ${edu.period}`}</p>
-                    <p className={`text-sm ${text.secondary}`}>{edu.details}</p>
+      {education.length > 0 && (
+        <section id="education" className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${sectionAltClass} relative`}>
+          <div className={`absolute inset-0 ${accentOverlayRight}`}></div>
+          <div className="max-w-6xl mx-auto relative">
+            <div className="flex items-center gap-3 mb-8">
+              <div className={`w-1 h-8 ${accentDivider} rounded-full`}></div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white">{labels.sections.education}</h2>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              {education.map((edu, index) => (
+                <div key={index} className={`${cardClass} p-6 hover:${border.accent} hover:shadow-lg hover:${accent.glowSoft} transition-all group`}>
+                  <div className="flex items-start gap-4">
+                    <div className={`flex-shrink-0 w-12 h-12 ${accentChip} rounded-lg flex items-center justify-center border ${border.accent} group-hover:${border.accent} transition-colors`}>
+                      <svg className={`w-6 h-6 ${text.accent}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white mb-1">{edu.degree}</h3>
+                      <p className={`${text.accent} font-medium mb-1`}>{edu.institution}</p>
+                      <p className={`text-sm ${text.tertiary} mb-2`}>{`${edu.location} • ${edu.period}`}</p>
+                      <p className={`text-sm ${text.secondary}`}>{edu.details}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Achievements */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 relative">
@@ -446,6 +438,7 @@ export default function Home() {
       </section>
 
       {/* Certifications */}
+      {certifications.length > 0 && (
       <section className={`py-16 sm:py-20 px-4 sm:px-6 lg:px-8 ${sectionAltClass} relative`}>
         <div className={`absolute inset-0 ${accentOverlayLeft}`}></div>
         <div className="max-w-6xl mx-auto relative">
@@ -468,6 +461,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Contact */}
       <section id="contact" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 relative">
@@ -524,31 +518,36 @@ export default function Home() {
                 </div>
               </a>
 
-              <div className={`bg-slate-800/50 backdrop-blur-sm p-6 rounded-xl border border-slate-700/50 hover:${border.accent} hover:shadow-lg hover:${accent.glowSoft} transition-all`}>
-                <p className="text-sm text-slate-400 mb-3 font-medium">{labels.sections.requestResume}</p>
-                <p className="text-xs text-slate-500 mb-4">Get detailed resume sent to your email</p>
-                <button
-                  onClick={() => setResumeModalOpen(true)}
-                  className={`block w-full text-center ${accentButton} py-3 rounded-lg transition-all font-medium ${accentShadow}`}
-                >
-                  Request Resume
-                </button>
-              </div>
+              {resumeRequest.enabled && (
+                <div className={`bg-slate-800/50 backdrop-blur-sm p-6 rounded-xl border border-slate-700/50 hover:${border.accent} hover:shadow-lg hover:${accent.glowSoft} transition-all`}>
+                  <p className="text-sm text-slate-400 mb-3 font-medium">{labels.sections.requestResume}</p>
+                  <p className="text-xs text-slate-500 mb-4">Get detailed resume sent to your email</p>
+                  <button
+                    onClick={() => setResumeModalOpen(true)}
+                    className={`block w-full text-center ${accentButton} py-3 rounded-lg transition-all font-medium ${accentShadow}`}
+                  >
+                    Request Resume
+                  </button>
+                </div>
+              )}
 
-              <div className={`bg-slate-800/50 backdrop-blur-sm p-6 rounded-xl border border-slate-700/50`}>
-                <p className="text-sm text-slate-400 mb-3 font-medium">{labels.sections.schedule}</p>
-                <p className="text-xs text-slate-500 mb-4">Got ideas? Questions? Random thoughts? Let&apos;s talk - pick a time.</p>
-                <a
-                  href={calendlyUrl.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`block w-full text-center ${accentButton} py-3 rounded-lg transition-all font-medium ${accentShadow}`}
-                >
-                  Schedule Meeting
-                </a>
-              </div>
+              {calendlyUrl.enabled && (
+                <div className={`bg-slate-800/50 backdrop-blur-sm p-6 rounded-xl border border-slate-700/50`}>
+                  <p className="text-sm text-slate-400 mb-3 font-medium">{labels.sections.schedule}</p>
+                  <p className="text-xs text-slate-500 mb-4">Got ideas? Questions? Random thoughts? Let&apos;s talk - pick a time.</p>
+                  <a
+                    href={calendlyUrl.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`block w-full text-center ${accentButton} py-3 rounded-lg transition-all font-medium ${accentShadow}`}
+                  >
+                    Schedule Meeting
+                  </a>
+                </div>
+              )}
             </div>
 
+            {contactForm.enabled && (
             <div className="bg-slate-800/50 backdrop-blur-sm p-8 rounded-xl border border-slate-700/50 shadow-lg">
               <h3 className="text-white text-xl font-semibold mb-6">{labels.sections.contactForm}</h3>
 
@@ -685,12 +684,13 @@ export default function Home() {
                 </form>
               )}
             </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* Resume Request Modal */}
-      {resumeModalOpen && (
+      {resumeRequest.enabled && resumeModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div
             className="bg-slate-800 rounded-xl border border-slate-700 max-w-md w-full p-8 relative"
@@ -860,18 +860,6 @@ export default function Home() {
               <a href="#skills" className={`text-slate-400 hover:${text.accent} transition-colors`}>Skills</a>
               <a href="#experience" className={`text-slate-400 hover:${text.accent} transition-colors`}>Experience</a>
               <a href="#publications" className={`text-slate-400 hover:${text.accent} transition-colors`}>Publications</a>
-              <a href="#education" className={`text-slate-400 hover:${text.accent} transition-colors`}>Education</a>
-              <a
-                href={personalInfo.blogUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`text-slate-400 hover:${text.accent} transition-colors flex items-center gap-1`}
-              >
-                Blog
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
               <a href="#contact" className={`text-slate-400 hover:${text.accent} transition-colors`}>Contact</a>
 
             </div>

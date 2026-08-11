@@ -53,7 +53,6 @@ export const labels = {
     experience: "Experience",
     education: "Education",
     contact: "Contact",
-    blog: "Blog",
     publications: "Publications",
   },
   hero: {
@@ -109,16 +108,15 @@ export const labels = {
 // Personal Info Section
 export const personalInfo = {
   name: "Manthan Bhala",
-  title: "ML Engineer",
-  location: "Remote / India",
-  tagline: "I build secure, scalable platforms and help teams ship with confidence.",
+  title: "Machine Learning Engineer",
+  location: "Gurugram, Haryana, India",
+  tagline: "Building practical machine-learning systems for search, ranking, and recommendations.",
   email: "manthanbhala@gmail.com",
   linkedin: "https://www.linkedin.com/in/manthan-bhala-a11760136",
   github: "https://github.com/ManthanBhala",
-  blogUrl: "https://yourblog.com",
   summary: [
-    "Security-minded engineer with hands-on experience across cloud, infrastructure, and compliance. Focused on building resilient systems and practical security controls.",
-    "Comfortable leading cross-functional initiatives, automating security checks, and translating risk into clear technical priorities."
+    "Machine learning engineer focused on improving e-commerce discovery with ranking, retrieval, and recommendation systems.",
+    "I like turning model work into measurable business impact by shipping production systems that are practical, fast, and maintainable."
   ]
 }
 
@@ -140,34 +138,18 @@ export const publications = [
 
 // Skills Section
 export const skills = {
-  "AI": [
+  "Machine Learning": [
     "HuggingFace",
     "Tensorflow",
     "PyTorch",
     "Python",
   ],
-  "Backend": [
-    "Node.js",
-    "Flask",
-    "Django",
-  ],
-  "Frontend": [
-    "Next.js"
-  ],
-  "Cloud & Infrastructure": [
-    "AWS",
-    "Azure",
-    "GCP",
-    "Infrastructure as Code",
-  ],
-  "DevOps & Automation": [
-    "CI/CD Pipelines",
-    "Docker",
-    "Kubernetes",
-    "Terraform",
-  ],
-  "Monitoring & Evaluation": [
-    "Grafana",
+  "Applied AI": [
+    "Information Retrieval",
+    "Learning to Rank",
+    "Recommendation Systems",
+    "LLMs",
+    "PEFT",
   ],
 }
 
@@ -177,30 +159,10 @@ export const experience = [
     title: "Senior ML Engineer",
     company: "Makro PRO",
     period: "Dec 2023 - Present",
-    location: "Remote",
+    location: "Gurugram, Haryana, India",
     responsibilities: [
-      "Led security program roadmap for multi-cloud environments and internal platforms",
-      "Implemented guardrails and automation to reduce security review time"
-    ]
-  },
-  {
-    title: "ML Engineer",
-    company: "Example Labs Co.",
-    period: "Mar 2023 - Dec 2023",
-    location: "Bengaluru, India",
-    responsibilities: [
-      "Designed cloud security controls for workloads across AWS and Azure",
-      "Built monitoring and alerting to surface misconfigurations early"
-    ]
-  },
-  {
-    title: "ML Engineer",
-    company: "Example Labs Co.",
-    period: "Mar 2023 - Dec 2023",
-    location: "Bengaluru, India",
-    responsibilities: [
-      "Designed cloud security controls for workloads across AWS and Azure",
-      "Built monitoring and alerting to surface misconfigurations early"
+      "Built ML systems for search, ranking, and recommendation workflows in e-commerce.",
+      "Worked on model distillation, feature design, and production rollout for measurable conversion gains."
     ]
   },
 ]
@@ -212,38 +174,31 @@ export const achievements = [
 ]
 
 // Certifications Section
-export const certifications = [
-  { name: "Certified Cloud Security Professional (CCSP)", issuer: "(ISC)2" },
-  { name: "AWS Certified Solutions Architect", issuer: "Amazon Web Services" },
-  { name: "Microsoft Certified: Azure Security Engineer", issuer: "Microsoft" },
-  { name: "CompTIA Security+", issuer: "CompTIA" }
-]
+export const certifications: { name: string; issuer: string }[] = []
 
 // Education Section
-export const education = [
-  {
-    degree: "B.Tech",
-    institution: "IIT Bombay",
-    location: "Mumbai, India",
-    period: "2016 - 2020",
-    details: "CGPA: 8.5"
-  },
-]
+export const education: {
+  degree: string
+  institution: string
+  location: string
+  period: string
+  details: string
+}[] = []
 
 // Calendly appointment scheduling link
 export const calendlyUrl = {
-  enabled: true,
-  url: "https://calendly.com/your-handle/intro-call",
+  enabled: false,
+  url: "",
 }
 
 // Resume request configuration - formspreeId
 export const resumeRequest = {
-  enabled: true,
-  formspreeId: "your-formspree-id",
+  enabled: false,
+  formspreeId: "",
 }
 
 // Contact form configuration - formspreeId
 export const contactForm = {
-  enabled: true,
-  formspreeId: "your-formspree-id",
+  enabled: false,
+  formspreeId: "",
 }
