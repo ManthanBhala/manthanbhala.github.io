@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Manthan Bhala | Machine Learning Engineer',
-  description: 'GitHub Pages resume for Manthan Bhala, Machine Learning Engineer.',
-  keywords: 'Manthan Bhala, machine learning engineer, resume, GitHub Pages',
+  title: 'Manthan Bhala | ML Engineer & Software Developer',
+  description: 'Manthan Bhala is a machine learning engineer and software developer building production systems for search, ranking, and recommendations.',
+  keywords: 'Manthan Bhala, machine learning engineer, software developer, search, ranking, recommendation systems',
   authors: [{ name: 'Manthan Bhala' }],
 
   icons: {
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: 'Manthan Bhala | Machine Learning Engineer',
-    description: 'GitHub Pages resume for Manthan Bhala.',
+    title: 'Manthan Bhala | ML Engineer & Software Developer',
+    description: 'Machine learning and software engineering for search, ranking, and recommendations.',
     type: 'website',
     locale: 'en_US',
   },
