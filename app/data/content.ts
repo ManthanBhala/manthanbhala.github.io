@@ -29,6 +29,18 @@ export const experience = [
       'Work on model distillation, feature design, evaluation, and production rollout to improve customer discovery and conversion.',
     ],
   },
+  {
+    title: 'Software Developer',
+    company: 'Jaguar Land Rover',
+    period: 'Sep 2020 – Feb 2023',
+    location: 'Bengaluru, Karnataka, India',
+    responsibilities: [
+      'Applied machine learning and software engineering to automotive data problems, building model-backed features end to end.',
+      'Developed and maintained ML pipelines and backend services for processing large-scale vehicle and customer data.',
+      'Performed feature engineering, model training, evaluation, and iterative experimentation to improve prediction quality.',
+      'Collaborated with data scientists, engineers, and product teams to ship reliable ML solutions into production.',
+    ],
+  },
 ]
 
 export const achievements = [

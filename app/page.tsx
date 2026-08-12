@@ -82,7 +82,7 @@ export default function Home() {
           </div>
           <div className="mx-auto md:mx-0">
             <div className="relative h-44 w-44 rounded-2xl border border-white/15 bg-slate-800 p-1 shadow-2xl shadow-cyan-950/60 sm:h-52 sm:w-52">
-              <Image src="/profile.jpeg" alt="Manthan Bhala" fill sizes="208px" className="rounded-xl object-cover" priority />
+              <Image src="/profile.jpeg?v=2" alt="Manthan Bhala" fill sizes="208px" className="rounded-xl object-cover" priority />
             </div>
           </div>
         </section>
