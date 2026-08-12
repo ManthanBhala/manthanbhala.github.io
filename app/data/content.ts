@@ -6,6 +6,7 @@ export const personalInfo = {
   email: 'manthanbhala@gmail.com',
   linkedin: 'https://www.linkedin.com/in/manthan-bhala-a11760136',
   github: 'https://github.com/ManthanBhala',
+  resume: '/Manthan_Bhala_Resume.pdf',
   summary: [
     'I build practical machine learning systems that improve e-commerce discovery, with a focus on retrieval, ranking, and recommendation pipelines.',
     'I enjoy turning model work into reliable software and measurable product impact through thoughtful experimentation, evaluation, and production-ready implementation.',

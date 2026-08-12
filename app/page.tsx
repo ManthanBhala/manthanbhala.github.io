@@ -77,6 +77,7 @@ export default function Home() {
               <a href={`mailto:${personalInfo.email}`} className="inline-flex items-center gap-2 rounded-lg bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">Get in touch <ArrowUpRight /></a>
               <a href={personalInfo.linkedin} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:border-slate-500 hover:bg-white/10"><LinkedInIcon /> LinkedIn</a>
               <a href={personalInfo.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:border-slate-500 hover:bg-white/10"><GitHubIcon /> GitHub</a>
+              <a href={personalInfo.resume} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:border-slate-500 hover:bg-white/10">Resume <ArrowUpRight /></a>
             </div>
           </div>
           <div className="mx-auto md:mx-0">
