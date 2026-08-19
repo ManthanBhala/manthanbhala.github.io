@@ -16,17 +16,31 @@ export const personalInfo = {
 export const skills = {
   'ML engineering': ['Python', 'PyTorch', 'TensorFlow', 'Hugging Face'],
   'Applied AI': ['Information Retrieval', 'Learning to Rank', 'Recommendation Systems', 'LLMs', 'PEFT'],
+  'Data & Infrastructure': ['SQL', 'PySpark', 'Docker', 'Kubernetes', 'CI/CD', 'Redis', 'Vector Search'],
 }
 
 export const experience = [
   {
-    title: 'Senior ML Engineer',
+    title: 'Senior Machine Learning Engineer',
     company: 'Makro PRO',
-    period: 'Dec 2023 – Present',
-    location: 'Gurugram, Haryana, India',
+    period: 'Oct 2023 – Present',
+    location: 'Remote',
     responsibilities: [
-      'Build machine learning systems for e-commerce search, ranking, and recommendation workflows.',
-      'Work on model distillation, feature design, evaluation, and production rollout to improve customer discovery and conversion.',
+      'Developed e-commerce recommendation models that increased total basket additions by 52%.',
+      'Built personalisation models by distilling LLMs into LightGBM for production-scale inference.',
+      'Built a vector search system for e-commerce with p99 latency under 100ms using vLLM.',
+      'Improved search results through autocategorization, autocorrect, query expansion, and query rewriting models.',
+      'Built a chatbot POC with RAG pipeline and function calling, optimized with quantization and vLLM deployment.',
+    ],
+  },
+  {
+    title: 'Software Developer 2',
+    company: 'Frinks AI',
+    period: 'Mar 2023 – Jul 2023',
+    location: 'Bengaluru, Karnataka, India',
+    responsibilities: [
+      'Developed and optimized ML inference pipelines for real-time defect detection and counting on industrial production lines.',
+      'Built computer vision and backend services for a quality inspection platform for dimensioning, surface defect, and crack detection.',
     ],
   },
   {
@@ -35,10 +49,8 @@ export const experience = [
     period: 'Sep 2020 – Feb 2023',
     location: 'Bengaluru, Karnataka, India',
     responsibilities: [
-      'Applied machine learning and software engineering to automotive data problems, building model-backed features end to end.',
-      'Developed and maintained ML pipelines and backend services for processing large-scale vehicle and customer data.',
-      'Performed feature engineering, model training, evaluation, and iterative experimentation to improve prediction quality.',
-      'Collaborated with data scientists, engineers, and product teams to ship reliable ML solutions into production.',
+      'Developed and maintained ML pipelines and backend services for Vehicle Algorithmic Self Diagnostics Tool.',
+      'Worked on Advanced Driver Assistance Systems (ADAS) for autonomous and assisted driving features.',
     ],
   },
 ]
