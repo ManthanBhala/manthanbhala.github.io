@@ -14,9 +14,9 @@ export const personalInfo = {
 }
 
 export const skills = {
-  'ML engineering': ['Python', 'PyTorch', 'TensorFlow'],
-  'Applied AI': ['LLMs', 'Recommendation Systems', 'Information Retrieval'],
-  'Data & Infrastructure': ['SQL', 'Docker', 'Kubernetes'],
+  'ML engineering': ['Python', 'PyTorch', 'TensorFlow', 'Hugging Face', 'LightGBM', 'PEFT'],
+  'Applied AI': ['LLMs', 'Recommendation Systems', 'Information Retrieval', 'Learning to Rank', 'RAG', 'Vector Search', 'Computer Vision', 'NLP'],
+  'Data & Infrastructure': ['SQL', 'Docker', 'Kubernetes', 'CI/CD', 'Redis', 'vLLM'],
 }
 
 export const experience = [
@@ -26,12 +26,13 @@ export const experience = [
     period: 'Oct 2023 – Present',
     location: 'Remote',
     responsibilities: [
-      'Developed user-based recommendations using collaborative filtering and two-tower models, and product-based recommendations using collaborative filtering and vector embeddings.',
-      'Built vector search for e-commerce by fine-tuning LLM embeddings for semantic product retrieval.',
-      'Built personalisation models through e-commerce-specific feature engineering and LLM distillation into LightGBM for production-scale inference.',
+      'Built recommendation models using collaborative filtering, two-tower networks, and vector embeddings.',
+      'Increased total basket additions by 52% through personalised user-based and product-based recommendations.',
+      'Built vector search by fine-tuning LLM embeddings for semantic product retrieval.',
+      'Built personalisation via e-commerce feature engineering and LLM distillation into LightGBM.',
       'Developed end-to-end recommendation pipeline with retrieval, ranking, and reranking stages.',
-      'Improved search results through autocategorization, autocorrect, query expansion, and query rewriting models.',
-      'Built a chatbot POC with RAG pipeline and function calling, optimized with quantization and vLLM deployment.',
+      'Improved search with autocategorization, autocorrect, query expansion, and query rewriting.',
+      'Built a chatbot POC with RAG, function calling, quantization, and vLLM deployment.',
     ],
   },
   {
@@ -40,8 +41,8 @@ export const experience = [
     period: 'Mar 2023 – Jul 2023',
     location: 'Bengaluru, Karnataka, India',
     responsibilities: [
-      'Developed and optimized ML inference pipelines for real-time defect detection and counting on industrial production lines.',
-      'Built computer vision and backend services for a quality inspection platform for dimensioning, surface defect, and crack detection.',
+      'Developed ML inference pipelines for real-time defect detection on production lines.',
+      'Built CV and backend services for quality inspection: dimensioning, defect, and crack detection.',
     ],
   },
   {
@@ -50,8 +51,8 @@ export const experience = [
     period: 'Sep 2020 – Feb 2023',
     location: 'Bengaluru, Karnataka, India',
     responsibilities: [
-      'Developed and maintained ML pipelines and backend services for Vehicle Algorithmic Self Diagnostics Tool.',
-      'Worked on Advanced Driver Assistance Systems (ADAS) for autonomous and assisted driving features.',
+      'Developed ML pipelines and backend services for Vehicle Algorithmic Self Diagnostics Tool.',
+      'Worked on ADAS systems for autonomous and assisted driving features.',
     ],
   },
 ]
