@@ -14,9 +14,9 @@ export const personalInfo = {
 }
 
 export const skills = {
-  'ML engineering': ['Python', 'PyTorch', 'TensorFlow', 'Hugging Face'],
-  'Applied AI': ['Information Retrieval', 'Learning to Rank', 'Recommendation Systems', 'LLMs', 'PEFT'],
-  'Data & Infrastructure': ['SQL', 'PySpark', 'Docker', 'Kubernetes', 'CI/CD', 'Redis', 'Vector Search'],
+  'ML engineering': ['Python', 'PyTorch', 'TensorFlow', 'Hugging Face', 'LightGBM', 'PEFT'],
+  'Applied AI': ['Information Retrieval', 'Learning to Rank', 'Recommendation Systems', 'LLMs', 'RAG', 'Vector Search', 'Computer Vision', 'NLP'],
+  'Data & Infrastructure': ['SQL', 'Docker', 'Kubernetes', 'CI/CD', 'Redis', 'vLLM'],
 }
 
 export const experience = [
@@ -34,7 +34,7 @@ export const experience = [
     ],
   },
   {
-    title: 'Software Developer 2',
+    title: 'ML Engineer',
     company: 'Frinks AI',
     period: 'Mar 2023 – Jul 2023',
     location: 'Bengaluru, Karnataka, India',
@@ -44,7 +44,7 @@ export const experience = [
     ],
   },
   {
-    title: 'Software Developer',
+    title: 'Data Scientist',
     company: 'Jaguar Land Rover',
     period: 'Sep 2020 – Feb 2023',
     location: 'Bengaluru, Karnataka, India',
@@ -61,7 +61,7 @@ export const achievements = [
 ]
 
 export const publications = [
-  { name: 'Patent 2501007631', level: 'A Hybrid Lexical-Semantic Retrieval Process for E-Commerce Search' },
-  { name: 'Patent 2501004476', level: 'A Hybrid LLM Process for Multi-Objective Reranking in E-Commerce' },
-  { name: 'Patent 2501004419', level: 'A Multilingual Phonetic BK-Tree Based Spelling Correction Process in E-Commerce' },
+  { name: '2501007631', level: 'A Hybrid Lexical-Semantic Retrieval Process for E-Commerce Search' },
+  { name: '2501004476', level: 'A Hybrid LLM Process for Multi-Objective Reranking in E-Commerce' },
+  { name: '2501004419', level: 'A Multilingual Phonetic BK-Tree Based Spelling Correction Process in E-Commerce' },
 ]
