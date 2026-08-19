@@ -14,9 +14,9 @@ export const personalInfo = {
 }
 
 export const skills = {
-  'ML engineering': ['Python', 'PyTorch', 'TensorFlow', 'Hugging Face', 'LightGBM', 'PEFT'],
-  'Applied AI': ['Information Retrieval', 'Learning to Rank', 'Recommendation Systems', 'LLMs', 'RAG', 'Vector Search', 'Computer Vision', 'NLP'],
-  'Data & Infrastructure': ['SQL', 'Docker', 'Kubernetes', 'CI/CD', 'Redis', 'vLLM'],
+  'ML engineering': ['Python', 'PyTorch', 'TensorFlow'],
+  'Applied AI': ['LLMs', 'Recommendation Systems', 'Information Retrieval'],
+  'Data & Infrastructure': ['SQL', 'Docker', 'Kubernetes'],
 }
 
 export const experience = [
@@ -34,7 +34,7 @@ export const experience = [
     ],
   },
   {
-    title: 'ML Engineer',
+    title: 'Machine Learning Engineer',
     company: 'Frinks AI',
     period: 'Mar 2023 – Jul 2023',
     location: 'Bengaluru, Karnataka, India',
