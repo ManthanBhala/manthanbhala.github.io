@@ -26,9 +26,10 @@ export const experience = [
     period: 'Oct 2023 – Present',
     location: 'Remote',
     responsibilities: [
-      'Developed e-commerce recommendation models that increased total basket additions by 52%.',
-      'Built personalisation models by distilling LLMs into LightGBM for production-scale inference.',
-      'Built a vector search system for e-commerce with p99 latency under 100ms using vLLM.',
+      'Developed user-based recommendations using collaborative filtering and two-tower models, and product-based recommendations using collaborative filtering and vector embeddings.',
+      'Built vector search for e-commerce by fine-tuning LLM embeddings for semantic product retrieval.',
+      'Built personalisation models through e-commerce-specific feature engineering and LLM distillation into LightGBM for production-scale inference.',
+      'Developed end-to-end recommendation pipeline with retrieval, ranking, and reranking stages.',
       'Improved search results through autocategorization, autocorrect, query expansion, and query rewriting models.',
       'Built a chatbot POC with RAG pipeline and function calling, optimized with quantization and vLLM deployment.',
     ],
