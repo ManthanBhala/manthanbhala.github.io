@@ -125,11 +125,13 @@ ${pubs}`
 type ChatMessage = { role: 'user' | 'assistant'; text: string }
 
 const GEMINI_CLIENT_ID = '385640274209-md0u2i4948vo84okuqe9jogubq48pqeg.apps.googleusercontent.com'
-const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'
+const VERTEX_PROJECT = 'portfolio-506323'
+const VERTEX_LOCATION = 'us-central1'
+const VERTEX_MODEL = 'gemini-2.0-flash'
 
 function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
-  const [authenticated, setAuthenticated] = useState(false)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
   const [userName, setUserName] = useState<string | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'assistant', text: "Hi! I'm Manthan's AI assistant. Ask me anything about his experience, skills, or projects." },
@@ -137,10 +139,11 @@ function ChatWidget() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [gisReady, setGisReady] = useState(false)
+  const tokenClientRef = useRef<any>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  /* ---- Load Google Identity Services (ID client for sign-in) ---- */
+  /* ---- Load Google Identity Services (token client for Vertex AI) ---- */
   useEffect(() => {
     if (document.getElementById('gsi-script')) { setGisReady(true); return }
     const s = document.createElement('script')
@@ -149,14 +152,13 @@ function ChatWidget() {
     s.async = true
     s.onload = () => {
       // @ts-ignore
-      window.google.accounts.id.initialize({
+      tokenClientRef.current = window.google.accounts.oauth2.initTokenClient({
         client_id: GEMINI_CLIENT_ID,
-        callback: (response: any) => {
-          try {
-            const payload = JSON.parse(atob(response.credential.split('.')[1]))
-            setUserName(payload.name || payload.email)
-            setAuthenticated(true)
-          } catch { /* ignore */ }
+        scope: 'https://www.googleapis.com/auth/cloud-platform',
+        callback: (tokenResponse: any) => {
+          if (tokenResponse.access_token) {
+            setAccessToken(tokenResponse.access_token)
+          }
         },
       })
       setGisReady(true)
@@ -176,15 +178,14 @@ function ChatWidget() {
 
   /* ---- Google Sign-In ---- */
   const handleGoogleSignIn = useCallback(() => {
-    // @ts-ignore
-    window.google.accounts.id.prompt()
+    tokenClientRef.current?.requestAccessToken()
   }, [])
 
-  /* ---- Send message to Gemini ---- */
+  /* ---- Send message to Vertex AI Gemini ---- */
   const sendMessage = useCallback(async () => {
     const text = input.trim()
     if (!text || loading) return
-    if (!authenticated) { handleGoogleSignIn(); return }
+    if (!accessToken) { handleGoogleSignIn(); return }
 
     const userMsg: ChatMessage = { role: 'user', text }
     setMessages((prev) => [...prev, userMsg])
@@ -197,18 +198,20 @@ function ChatWidget() {
         parts: [{ text: m.text }],
       }))
 
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: conversationHistory,
-            systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
-            generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
-          }),
+      const endpoint = `https://${VERTEX_LOCATION}-aiplatform.googleapis.com/v1/projects/${VERTEX_PROJECT}/locations/${VERTEX_LOCATION}/publishers/google/models/${VERTEX_MODEL}:generateContent`
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
         },
-      )
+        body: JSON.stringify({
+          contents: conversationHistory,
+          systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
+          generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+        }),
+      })
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
@@ -223,7 +226,7 @@ function ChatWidget() {
     } finally {
       setLoading(false)
     }
-  }, [input, loading, authenticated, messages, handleGoogleSignIn])
+  }, [input, loading, accessToken, messages, handleGoogleSignIn])
 
   const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }
 
@@ -254,7 +257,7 @@ function ChatWidget() {
           </div>
 
           {/* Auth gate */}
-          {!authenticated && (
+          {!accessToken && (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-50 text-cyan-600">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
@@ -272,7 +275,7 @@ function ChatWidget() {
           )}
 
           {/* Messages */}
-          {authenticated && (
+          {accessToken && (
             <>
               <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
                 {messages.map((msg, i) => (
