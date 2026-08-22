@@ -124,47 +124,17 @@ ${pubs}`
 
 type ChatMessage = { role: 'user' | 'assistant'; text: string }
 
-const GEMINI_CLIENT_ID = '385640274209-md0u2i4948vo84okuqe9jogubq48pqeg.apps.googleusercontent.com'
-const VERTEX_PROJECT = 'portfolio-506323'
-const VERTEX_LOCATION = 'us-central1'
-const VERTEX_MODEL = 'gemini-2.0-flash'
+const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'
 
 function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
-  const [accessToken, setAccessToken] = useState<string | null>(null)
-  const [userName, setUserName] = useState<string | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'assistant', text: "Hi! I'm Manthan's AI assistant. Ask me anything about his experience, skills, or projects." },
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [gisReady, setGisReady] = useState(false)
-  const tokenClientRef = useRef<any>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-
-  /* ---- Load Google Identity Services (token client for Vertex AI) ---- */
-  useEffect(() => {
-    if (document.getElementById('gsi-script')) { setGisReady(true); return }
-    const s = document.createElement('script')
-    s.id = 'gsi-script'
-    s.src = 'https://accounts.google.com/gsi/client'
-    s.async = true
-    s.onload = () => {
-      // @ts-ignore
-      tokenClientRef.current = window.google.accounts.oauth2.initTokenClient({
-        client_id: GEMINI_CLIENT_ID,
-        scope: 'https://www.googleapis.com/auth/cloud-platform',
-        callback: (tokenResponse: any) => {
-          if (tokenResponse.access_token) {
-            setAccessToken(tokenResponse.access_token)
-          }
-        },
-      })
-      setGisReady(true)
-    }
-    document.head.appendChild(s)
-  }, [])
 
   /* ---- Auto-scroll ---- */
   useEffect(() => {
@@ -176,16 +146,10 @@ function ChatWidget() {
     if (isOpen) setTimeout(() => inputRef.current?.focus(), 150)
   }, [isOpen])
 
-  /* ---- Google Sign-In ---- */
-  const handleGoogleSignIn = useCallback(() => {
-    tokenClientRef.current?.requestAccessToken()
-  }, [])
-
-  /* ---- Send message to Vertex AI Gemini ---- */
+  /* ---- Send message to Gemini ---- */
   const sendMessage = useCallback(async () => {
     const text = input.trim()
     if (!text || loading) return
-    if (!accessToken) { handleGoogleSignIn(); return }
 
     const userMsg: ChatMessage = { role: 'user', text }
     setMessages((prev) => [...prev, userMsg])
@@ -198,20 +162,18 @@ function ChatWidget() {
         parts: [{ text: m.text }],
       }))
 
-      const endpoint = `https://${VERTEX_LOCATION}-aiplatform.googleapis.com/v1/projects/${VERTEX_PROJECT}/locations/${VERTEX_LOCATION}/publishers/google/models/${VERTEX_MODEL}:generateContent`
-
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: conversationHistory,
+            systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
+            generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+          }),
         },
-        body: JSON.stringify({
-          contents: conversationHistory,
-          systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
-          generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
-        }),
-      })
+      )
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
@@ -226,7 +188,7 @@ function ChatWidget() {
     } finally {
       setLoading(false)
     }
-  }, [input, loading, accessToken, messages, handleGoogleSignIn])
+  }, [input, loading, messages])
 
   const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }
 
@@ -248,74 +210,49 @@ function ChatWidget() {
           <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-100 text-xs font-bold text-cyan-700">MB</div>
-              <div>
-                <p className="text-xs font-semibold text-slate-900">Manthan&apos;s Assistant</p>
-                {userName && <p className="text-[10px] text-slate-500">Signed in as {userName}</p>}
-              </div>
+              <p className="text-xs font-semibold text-slate-900">Manthan&apos;s Assistant</p>
             </div>
             <button onClick={() => setIsOpen(false)} className="rounded-md p-1 text-slate-400 transition hover:bg-slate-200 hover:text-slate-600"><CloseIcon /></button>
           </div>
 
-          {/* Auth gate */}
-          {!accessToken && (
-            <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-50 text-cyan-600">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
-              </div>
-              <p className="text-xs leading-5 text-slate-500">Sign in with your Google account to start chatting with the AI assistant.</p>
-              <button
-                onClick={handleGoogleSignIn}
-                disabled={!gisReady}
-                className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:opacity-50"
-              >
-                <svg viewBox="0 0 24 24" className="h-4 w-4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                Sign in with Google
-              </button>
-            </div>
-          )}
-
           {/* Messages */}
-          {accessToken && (
-            <>
-              <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
-                {messages.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-5 ${msg.role === 'user' ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                      {msg.text}
-                    </div>
-                  </div>
-                ))}
-                {loading && (
-                  <div className="flex justify-start">
-                    <div className="rounded-xl bg-slate-100 px-3 py-2 text-xs text-slate-400">
-                      <span className="animate-pulse">Thinking...</span>
-                    </div>
-                  </div>
-                )}
-                <div ref={chatEndRef} />
+          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
+            {messages.map((msg, i) => (
+              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-5 ${msg.role === 'user' ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-700'}`}>
+                  {msg.text}
+                </div>
               </div>
+            ))}
+            {loading && (
+              <div className="flex justify-start">
+                <div className="rounded-xl bg-slate-100 px-3 py-2 text-xs text-slate-400">
+                  <span className="animate-pulse">Thinking...</span>
+                </div>
+              </div>
+            )}
+            <div ref={chatEndRef} />
+          </div>
 
-              {/* Input */}
-              <div className="flex items-center gap-2 border-t border-slate-200 p-2.5">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ask about my experience..."
-                  className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:bg-white"
-                />
-                <button
-                  onClick={sendMessage}
-                  disabled={!input.trim() || loading}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-950 text-white transition hover:bg-slate-800 disabled:opacity-40"
-                >
-                  <SendIcon />
-                </button>
-              </div>
-            </>
-          )}
+          {/* Input */}
+          <div className="flex items-center gap-2 border-t border-slate-200 p-2.5">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask about my experience..."
+              className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:bg-white"
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!input.trim() || loading}
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-950 text-white transition hover:bg-slate-800 disabled:opacity-40"
+            >
+              <SendIcon />
+            </button>
+          </div>
         </div>
       )}
     </>
