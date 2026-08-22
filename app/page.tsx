@@ -1,4 +1,7 @@
+'use client'
+
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import {
   achievements,
   experience,
@@ -45,6 +48,34 @@ function GitHubIcon() {
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
       <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.61-3.37-1.18-3.37-1.18-.46-1.15-1.11-1.46-1.11-1.46-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.99 1.03-2.68-.1-.26-.45-1.28.1-2.65 0 0 .84-.27 2.75 1.02A9.57 9.57 0 0 1 12 6.84c.85 0 1.7.11 2.5.34 1.91-1.3 2.75-1.03 2.75-1.03.54 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.85-2.34 4.69-4.57 4.94.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2Z" />
     </svg>
+  )
+}
+
+function ChatWidget() {
+  const [authenticated, setAuthenticated] = useState(false)
+
+  useEffect(() => {
+    const handler = () => setAuthenticated(true)
+    document.addEventListener('agent-authenticated', handler)
+    return () => document.removeEventListener('agent-authenticated', handler)
+  }, [])
+
+  return (
+    <div className="fixed bottom-5 right-5 z-50 w-80 rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10">
+      <div id="auth-panel" className="p-4 text-sm text-slate-600" style={{ display: authenticated ? 'none' : 'block' }}>
+        <p>Please authenticate using a standard Google profile to authorize Gemini processing quotas:</p>
+        <button className="my-custom-btn mt-3 inline-flex items-center gap-2 rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200" onClick={() => (window as any).triggerRecruiterLogin?.()}>Sign In with Google</button>
+      </div>
+      <div id="custom-chat-window" className="h-96 overflow-y-auto border-t border-slate-200 p-3" />
+      <div className="flex gap-2 border-t border-slate-200 p-3">
+        <input type="text" id="user-input-node" placeholder="Ask something..." className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-cyan-400" />
+        <button className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800" onClick={() => {
+          const input = document.getElementById('user-input-node') as HTMLInputElement
+          const query = input?.value.trim()
+          if (query) { (window as any).sendMessageToAgent?.(query); input.value = '' }
+        }}>Send</button>
+      </div>
+    </div>
   )
 }
 
@@ -187,6 +218,7 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-slate-200 px-5 py-7 text-center text-sm text-slate-500">© {new Date().getFullYear()} {personalInfo.name}</footer>
+      <ChatWidget />
     </main>
   )
 }
