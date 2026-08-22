@@ -124,7 +124,7 @@ ${pubs}`
 
 type ChatMessage = { role: 'user' | 'assistant'; text: string }
 
-const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'
+const GEMINI_API_KEY = 'AQ.Ab8RN6KoWFOcUbE7wOJD4XcTLuA7DPslJFekMp9vIoRFVgAGPg'
 
 function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
