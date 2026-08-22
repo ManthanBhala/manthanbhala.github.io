@@ -1,9 +1,10 @@
 export const personalInfo = {
   name: 'Manthan Bhala',
-  title: 'Machine Learning Engineer & Software Developer',
+  title: 'Machine Learning Engineer',
   location: 'Gurugram, Haryana, India',
-  tagline: 'Machine learning engineer and software developer building production systems for search, ranking, and recommendations.',
+  tagline: 'Machine learning engineer building production systems for search, ranking, and recommendations.',
   email: 'manthanbhala@gmail.com',
+  phone: '+91 7023540575',
   linkedin: 'https://www.linkedin.com/in/manthan-bhala-a11760136',
   github: 'https://github.com/ManthanBhala',
   resume: '/Manthan_Bhala_Resume.pdf',
@@ -15,8 +16,8 @@ export const personalInfo = {
 
 export const skills = {
   'ML engineering': ['Python', 'PyTorch', 'TensorFlow', 'Hugging Face', 'LightGBM', 'PEFT'],
-  'Applied AI': ['LLMs', 'Recommendation Systems', 'Information Retrieval', 'Learning to Rank', 'RAG', 'Vector Search', 'Computer Vision', 'NLP'],
-  'Data & Infrastructure': ['SQL', 'Docker', 'Kubernetes', 'CI/CD', 'Redis', 'vLLM'],
+  'Applied AI': ['LLMs', 'Recommendation Systems', 'Information Retrieval', 'Learning to Rank', 'RAG'],
+  'Data & Infrastructure': ['SQL', 'Docker', 'Kubernetes', 'CI/CD', 'Redis', 'vLLM', 'Vector Database', 'Typesense'],
 }
 
 export const experience = [
@@ -26,13 +27,18 @@ export const experience = [
     period: 'Oct 2023 – Present',
     location: 'Remote',
     responsibilities: [
-      'Built recommendation models using collaborative filtering, two-tower networks, and vector embeddings.',
-      'Increased total basket additions by 52% through personalised user-based and product-based recommendations.',
-      'Built vector search by fine-tuning LLM embeddings for semantic product retrieval.',
-      'Built personalisation via e-commerce feature engineering and LLM distillation into LightGBM.',
-      'Developed end-to-end recommendation pipeline with retrieval, ranking, and reranking stages.',
-      'Improved search with autocategorization, autocorrect, query expansion, and query rewriting.',
-      'Built a chatbot POC with RAG, function calling, quantization, and vLLM deployment.',
+      'Built recommendation models: collaborative filtering, two-tower networks, and embeddings for 1M+ DAU.',
+      'Increased basket adds by 52% through personalized user-based and product-based recommendations.',
+      'Built multilingual (English, Thai) semantic product retrieval over 100k+ products with sub-100ms p99 latency.',
+      'Built e-commerce image search combining SigLIP 2 image and text embeddings for cross-modal retrieval.',
+      'Built personalization pipeline via feature engineering and LLM distillation into LightGBM.',
+      'Created dynamic user segmentation for business visualization, product collection generation, and cold-start.',
+      'Created a content generation POC using fine-tuned LLaMA 3 for multilingual titles, categories, descriptions.',
+      'Developed end-to-end search and recommendation pipelines across retrieval, ranking, and reranking.',
+      'Developed query suggestion and related-search models to improve customer search experience.',
+      'Improved multilingual search via autocategorization, autocorrect, and query expansion.',
+      'Built a multiuse RAG chatbot with FAQ handling, tool calling (search, order APIs), and guardrails.',
+      'Built repeat purchase recommendations to predict reorder time and probability via fine-tuned LightGBM.',
     ],
   },
   {
@@ -41,8 +47,8 @@ export const experience = [
     period: 'Mar 2023 – Jul 2023',
     location: 'Bengaluru, Karnataka, India',
     responsibilities: [
-      'Developed ML inference pipelines for real-time defect detection on production lines.',
-      'Built CV and backend services for quality inspection: dimensioning, defect, and crack detection.',
+      'Developed real-time ML pipelines for defect detection and item counting on manufacturing lines.',
+      'Built computer vision and backend services for quality inspection, dimensioning, and crack detection.',
     ],
   },
   {
@@ -51,8 +57,17 @@ export const experience = [
     period: 'Sep 2020 – Feb 2023',
     location: 'Bengaluru, Karnataka, India',
     responsibilities: [
-      'Developed ML pipelines and backend services for Vehicle Algorithmic Self Diagnostics Tool.',
-      'Worked on ADAS systems for autonomous and assisted driving features.',
+      'Developed ML pipelines and backend services for the Vehicle Algorithmic Self-Diagnostics Tool.',
+      'Worked on ADAS systems enabling autonomous driving and driver-assistance features for vehicles.',
+    ],
+  },
+  {
+    title: 'Machine Learning Developer',
+    company: 'Quantiphi Analytics',
+    period: 'May 2019 – Jul 2019',
+    location: 'Intern',
+    responsibilities: [
+      'Developed and deployed ML models for video action recognition using CNN + LSTM.',
     ],
   },
 ]
