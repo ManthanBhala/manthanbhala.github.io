@@ -124,7 +124,7 @@ ${pubs}`
 
 type ChatMessage = { role: 'user' | 'assistant'; text: string }
 
-const GEMINI_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com'
+const GEMINI_CLIENT_ID = '385640274209-md0u2i4948vo84okuqe9jogubq48pqeg.apps.googleusercontent.com'
 
 function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
