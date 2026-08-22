@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   achievements,
   experience,
@@ -9,6 +9,10 @@ import {
   publications,
   skills,
 } from './data/content'
+
+/* ------------------------------------------------------------------ */
+/*  Icons                                                              */
+/* ------------------------------------------------------------------ */
 
 function ArrowUpRight() {
   return (
@@ -51,33 +55,281 @@ function GitHubIcon() {
   )
 }
 
-function ChatWidget() {
-  const [authenticated, setAuthenticated] = useState(false)
-
-  useEffect(() => {
-    const handler = () => setAuthenticated(true)
-    document.addEventListener('agent-authenticated', handler)
-    return () => document.removeEventListener('agent-authenticated', handler)
-  }, [])
-
+function ChatIcon() {
   return (
-    <div className="fixed bottom-5 right-5 z-50 w-80 rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10">
-      <div id="auth-panel" className="p-4 text-sm text-slate-600" style={{ display: authenticated ? 'none' : 'block' }}>
-        <p>Please authenticate using a standard Google profile to authorize Gemini processing quotas:</p>
-        <button className="my-custom-btn mt-3 inline-flex items-center gap-2 rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200" onClick={() => (window as any).triggerRecruiterLogin?.()}>Sign In with Google</button>
-      </div>
-      <div id="custom-chat-window" className="h-96 overflow-y-auto border-t border-slate-200 p-3" />
-      <div className="flex gap-2 border-t border-slate-200 p-3">
-        <input type="text" id="user-input-node" placeholder="Ask something..." className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-cyan-400" />
-        <button className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800" onClick={() => {
-          const input = document.getElementById('user-input-node') as HTMLInputElement
-          const query = input?.value.trim()
-          if (query) { (window as any).sendMessageToAgent?.(query); input.value = '' }
-        }}>Send</button>
-      </div>
-    </div>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z" />
+    </svg>
   )
 }
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  )
+}
+
+function SendIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+    </svg>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Gemini system prompt built from profile data                       */
+/* ------------------------------------------------------------------ */
+
+function buildSystemPrompt(): string {
+  const exp = experience
+    .map((e) => `${e.title} at ${e.company} (${e.period}, ${e.location})\n${e.responsibilities.map((r) => `- ${r}`).join('\n')}`)
+    .join('\n\n')
+  const pubs = publications.map((p) => `${p.name} — ${p.level}`).join('\n')
+  const skillEntries = Object.entries(skills)
+    .map(([cat, items]) => `${cat}: ${items.join(', ')}`)
+    .join('\n')
+
+  return `You are a helpful assistant on Manthan Bhala's personal portfolio website. Answer questions about Manthan's background, skills, experience, and projects using ONLY the information below. Be concise, professional, and friendly. If asked something unrelated, politely redirect to Manthan's work.
+
+## Profile
+Name: ${personalInfo.name}
+Title: ${personalInfo.title}
+Location: ${personalInfo.location}
+Email: ${personalInfo.email}
+LinkedIn: ${personalInfo.linkedin}
+GitHub: ${personalInfo.github}
+
+## Summary
+${personalInfo.summary.join(' ')}
+
+## Skills
+${skillEntries}
+
+## Experience
+${exp}
+
+## Achievements
+${achievements.join('\n')}
+
+## Patents
+${pubs}`
+}
+
+/* ------------------------------------------------------------------ */
+/*  Chat Widget                                                        */
+/* ------------------------------------------------------------------ */
+
+type ChatMessage = { role: 'user' | 'assistant'; text: string }
+
+const GEMINI_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com'
+
+function ChatWidget() {
+  const [isOpen, setIsOpen] = useState(false)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [userName, setUserName] = useState<string | null>(null)
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { role: 'assistant', text: "Hi! I'm Manthan's AI assistant. Ask me anything about his experience, skills, or projects." },
+  ])
+  const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [gisReady, setGisReady] = useState(false)
+  const tokenClientRef = useRef<any>(null)
+  const chatEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  /* ---- Load Google Identity Services ---- */
+  useEffect(() => {
+    if (document.getElementById('gsi-script')) { setGisReady(true); return }
+    const s = document.createElement('script')
+    s.id = 'gsi-script'
+    s.src = 'https://accounts.google.com/gsi/client'
+    s.async = true
+    s.onload = () => {
+      // @ts-ignore
+      tokenClientRef.current = window.google.accounts.oauth2.initTokenClient({
+        client_id: GEMINI_CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/generative.language',
+        callback: (tokenResponse: any) => {
+          if (tokenResponse.access_token) {
+            setAccessToken(tokenResponse.access_token)
+            /* decode ID token for display name */
+            if (tokenResponse.id_token) {
+              try {
+                const payload = JSON.parse(atob(tokenResponse.id_token.split('.')[1]))
+                setUserName(payload.name || payload.email)
+              } catch { /* ignore */ }
+            }
+          }
+        },
+      })
+      setGisReady(true)
+    }
+    document.head.appendChild(s)
+  }, [])
+
+  /* ---- Auto-scroll ---- */
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  /* ---- Focus input when opened ---- */
+  useEffect(() => {
+    if (isOpen) setTimeout(() => inputRef.current?.focus(), 150)
+  }, [isOpen])
+
+  /* ---- Google Sign-In ---- */
+  const handleGoogleSignIn = useCallback(() => {
+    tokenClientRef.current?.requestAccessToken()
+  }, [])
+
+  /* ---- Send message to Gemini ---- */
+  const sendMessage = useCallback(async () => {
+    const text = input.trim()
+    if (!text || loading) return
+    if (!accessToken) { handleGoogleSignIn(); return }
+
+    const userMsg: ChatMessage = { role: 'user', text }
+    setMessages((prev) => [...prev, userMsg])
+    setInput('')
+    setLoading(true)
+
+    try {
+      const conversationHistory = [...messages, userMsg].map((m) => ({
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.text }],
+      }))
+
+      const res = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            contents: conversationHistory,
+            systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
+            generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+          }),
+        },
+      )
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err?.error?.message || `API error ${res.status}`)
+      }
+
+      const data = await res.json()
+      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I could not generate a response.'
+      setMessages((prev) => [...prev, { role: 'assistant', text: reply }])
+    } catch (err: any) {
+      setMessages((prev) => [...prev, { role: 'assistant', text: `Error: ${err.message || 'Something went wrong.'}` }])
+    } finally {
+      setLoading(false)
+    }
+  }, [input, loading, accessToken, messages, handleGoogleSignIn])
+
+  const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }
+
+  return (
+    <>
+      {/* ---- Toggle FAB ---- */}
+      <button
+        onClick={() => setIsOpen((v) => !v)}
+        className="fixed bottom-5 right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950 text-white shadow-lg shadow-slate-900/20 transition hover:bg-slate-800 hover:scale-105 active:scale-95"
+        aria-label={isOpen ? 'Close chat' : 'Open chat'}
+      >
+        {isOpen ? <CloseIcon /> : <ChatIcon />}
+      </button>
+
+      {/* ---- Chat Panel ---- */}
+      {isOpen && (
+        <div className="fixed bottom-20 right-5 z-50 flex w-80 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/15" style={{ height: '26rem' }}>
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-100 text-xs font-bold text-cyan-700">MB</div>
+              <div>
+                <p className="text-xs font-semibold text-slate-900">Manthan&apos;s Assistant</p>
+                {userName && <p className="text-[10px] text-slate-500">Signed in as {userName}</p>}
+              </div>
+            </div>
+            <button onClick={() => setIsOpen(false)} className="rounded-md p-1 text-slate-400 transition hover:bg-slate-200 hover:text-slate-600"><CloseIcon /></button>
+          </div>
+
+          {/* Auth gate */}
+          {!accessToken && (
+            <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-50 text-cyan-600">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+              </div>
+              <p className="text-xs leading-5 text-slate-500">Sign in with your Google account to start chatting with the AI assistant.</p>
+              <button
+                onClick={handleGoogleSignIn}
+                disabled={!gisReady}
+                className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:opacity-50"
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Sign in with Google
+              </button>
+            </div>
+          )}
+
+          {/* Messages */}
+          {accessToken && (
+            <>
+              <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
+                {messages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-5 ${msg.role === 'user' ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-700'}`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                {loading && (
+                  <div className="flex justify-start">
+                    <div className="rounded-xl bg-slate-100 px-3 py-2 text-xs text-slate-400">
+                      <span className="animate-pulse">Thinking...</span>
+                    </div>
+                  </div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
+
+              {/* Input */}
+              <div className="flex items-center gap-2 border-t border-slate-200 p-2.5">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Ask about my experience..."
+                  className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:bg-white"
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={!input.trim() || loading}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-950 text-white transition hover:bg-slate-800 disabled:opacity-40"
+                >
+                  <SendIcon />
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Page                                                               */
+/* ------------------------------------------------------------------ */
 
 export default function Home() {
   return (
@@ -218,6 +470,7 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-slate-200 px-5 py-7 text-center text-sm text-slate-500">© {new Date().getFullYear()} {personalInfo.name}</footer>
+
       <ChatWidget />
     </main>
   )
