@@ -133,6 +133,8 @@ function ChatWidget() {
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [listening, setListening] = useState(false)
+  const recognitionRef = useRef<any>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -192,6 +194,38 @@ function ChatWidget() {
 
   const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }
 
+  /* ---- Voice toggle ---- */
+  const toggleVoice = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SpeechRecognition) { alert('Speech recognition is not supported in this browser.'); return }
+
+    if (listening && recognitionRef.current) {
+      recognitionRef.current.stop()
+      setListening(false)
+      return
+    }
+
+    const recognition = new SpeechRecognition()
+    recognition.continuous = false
+    recognition.interimResults = true
+    recognition.lang = 'en-US'
+
+    recognition.onresult = (event: any) => {
+      let transcript = ''
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript
+      }
+      setInput((prev) => transcript || prev)
+    }
+
+    recognition.onend = () => { setListening(false) }
+    recognition.onerror = () => { setListening(false) }
+
+    recognitionRef.current = recognition
+    recognition.start()
+    setListening(true)
+  }, [listening])
+
   return (
     <>
       {/* ---- Toggle FAB ---- */}
@@ -242,9 +276,20 @@ function ChatWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about my experience..."
+              placeholder={listening ? 'Listening...' : 'Ask about my experience...'}
               className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:bg-white"
             />
+            <button
+              onClick={toggleVoice}
+              className={`flex h-8 w-8 items-center justify-center rounded-lg border transition ${listening ? 'border-red-300 bg-red-50 text-red-600 animate-pulse' : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700'}`}
+              aria-label={listening ? 'Stop listening' : 'Voice input'}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line strokeLinecap="round" strokeLinejoin="round" x1="12" x2="12" y1="19" y2="22" />
+              </svg>
+            </button>
             <button
               onClick={sendMessage}
               disabled={!input.trim() || loading}
