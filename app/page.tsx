@@ -124,7 +124,7 @@ ${pubs}`
 
 type ChatMessage = { role: 'user' | 'assistant'; text: string }
 
-const GEMINI_API_KEY = 'AQ.Ab8RN6KoWFOcUbE7wOJD4XcTLuA7DPslJFekMp9vIoRFVgAGPg'
+const GEMINI_API_KEY = 'AQ.Ab8RN6INU5chNh3i_QdMFIs7Yd2KzDvMlgqmSOVnnd0GJ78IMQ'
 
 function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
@@ -163,7 +163,7 @@ function ChatWidget() {
       }))
 
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-06-05:generateContent?key=${GEMINI_API_KEY}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
