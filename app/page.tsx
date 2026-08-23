@@ -315,7 +315,7 @@ export default function Home() {
         <div className="absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(148,163,184,.12)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,.12)_1px,transparent_1px)] [background-size:46px_46px]" />
         <div className="absolute -right-28 -top-32 h-96 w-96 rounded-full bg-cyan-400/20 blur-3xl" />
         <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-5 py-6 sm:px-8">
-          <a href="#top" className="text-sm font-semibold tracking-tight text-white">MB<span className="text-cyan-300">.</span></a>
+          <div />
           <div className="flex items-center gap-5 text-sm text-slate-300">
             <a href="#experience" className="transition hover:text-white">Experience</a>
             <a href="#work" className="transition hover:text-white">Work</a>
