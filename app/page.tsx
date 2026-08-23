@@ -124,10 +124,10 @@ ${pubs}`
 
 type ChatMessage = { role: 'user' | 'assistant'; text: string }
 
-const GEMINI_API_KEY = 'AQ.Ab8RN6INU5chNh3i_QdMFIs7Yd2KzDvMlgqmSOVnnd0GJ78IMQ'
-
 function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
+  const [apiKey, setApiKey] = useState<string | null>(null)
+  const [apiKeyInput, setApiKeyInput] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'assistant', text: "Hi! I'm Manthan's AI assistant. Ask me anything about his experience, skills, or projects." },
   ])
@@ -137,6 +137,20 @@ function ChatWidget() {
   const recognitionRef = useRef<any>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  /* ---- Load API key from localStorage ---- */
+  useEffect(() => {
+    const saved = localStorage.getItem('gemini_api_key')
+    if (saved) setApiKey(saved)
+  }, [])
+
+  const saveApiKey = () => {
+    const key = apiKeyInput.trim()
+    if (key) {
+      setApiKey(key)
+      localStorage.setItem('gemini_api_key', key)
+    }
+  }
 
   /* ---- Auto-scroll ---- */
   useEffect(() => {
@@ -151,7 +165,7 @@ function ChatWidget() {
   /* ---- Send message to Gemini ---- */
   const sendMessage = useCallback(async () => {
     const text = input.trim()
-    if (!text || loading) return
+    if (!text || loading || !apiKey) return
 
     const userMsg: ChatMessage = { role: 'user', text }
     setMessages((prev) => [...prev, userMsg])
@@ -165,7 +179,7 @@ function ChatWidget() {
       }))
 
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-06-05:generateContent?key=${GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-06-05:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -190,7 +204,7 @@ function ChatWidget() {
     } finally {
       setLoading(false)
     }
-  }, [input, loading, messages])
+  }, [input, loading, apiKey, messages])
 
   const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }
 
@@ -249,8 +263,34 @@ function ChatWidget() {
             <button onClick={() => setIsOpen(false)} className="rounded-md p-1 text-slate-400 transition hover:bg-slate-200 hover:text-slate-600"><CloseIcon /></button>
           </div>
 
+          {/* API Key gate */}
+          {!apiKey && (
+            <div className="flex flex-1 flex-col items-center justify-center gap-3 px-5 text-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-50 text-cyan-600">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" /></svg>
+              </div>
+              <p className="text-xs leading-5 text-slate-500">Enter your Gemini API key to start chatting. Stored locally in your browser.</p>
+              <input
+                type="password"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') saveApiKey() }}
+                placeholder="Paste your Gemini API key..."
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:bg-white"
+              />
+              <button
+                onClick={saveApiKey}
+                disabled={!apiKeyInput.trim()}
+                className="w-full rounded-lg bg-slate-950 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 disabled:opacity-40"
+              >
+                Save & Start Chatting
+              </button>
+            </div>
+          )}
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
+          {apiKey && (
+            <>
+              <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-5 ${msg.role === 'user' ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-700'}`}>
@@ -298,6 +338,8 @@ function ChatWidget() {
               <SendIcon />
             </button>
           </div>
+            </>
+          )}
         </div>
       )}
     </>
